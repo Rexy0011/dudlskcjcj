@@ -38,6 +38,11 @@ import email as email_module
 from email.header import decode_header
 import psutil
 
+chrome_path = os.getenv("CHROME_BIN", "/usr/bin/chromium")
+
+# Example if using Pyppeteer / Playwright / Selenium:
+# browser = await launch(executablePath=chrome_path)
+
 # ============================================================
 # WATERMARK - LEAK X HUB
 # ============================================================
