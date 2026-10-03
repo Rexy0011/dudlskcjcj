@@ -10,3 +10,4 @@ colorama
 pystyle
 rich
 psutil
+playwright
