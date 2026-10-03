@@ -2462,11 +2462,6 @@ def load_or_create_config():
             "cooldown": 91,
             "provider_selection": "crowmail",
             "email_providers": {
-                "crowmail": {
-                    "enabled": False,
-                    "password": "",
-                    "description": "CrowMail - Free temporary email service"
-                },
                 "cybertemp": {
                     "enabled": False,
                     "api_key": "",
@@ -2914,7 +2909,6 @@ def get_email_from_provider(config: dict) -> tuple:
     provider_selection = config.get("provider_selection", "").lower().strip()
     
     providers = {
-        "crowmail": get_crowmail_email,
         "cybertemp": get_cybertemp_email,
         "duckmail": get_duckmail_email,
         "hotmail007": get_hotmail007_email,
