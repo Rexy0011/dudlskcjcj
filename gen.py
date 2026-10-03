@@ -39,6 +39,7 @@ from email.header import decode_header
 import psutil
 
 chrome_path = os.getenv("CHROME_BIN", "/usr/bin/chromium")
+browser_executable_path = "/usr/bin/chromium"  # adjust to your installed binary location
 
 # Example if using Pyppeteer / Playwright / Selenium:
 # browser = await launch(executablePath=chrome_path)
