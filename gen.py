@@ -40,56 +40,27 @@ import psutil
 
 import asyncio
 import os
-import shutil
 from playwright.async_api import async_playwright
 
-
-def find_chromium_path():
-    # 1. Search system PATH for chromium or google-chrome
-    for binary in ["chromium", "chromium-browser", "google-chrome", "chrome"]:
-        path = shutil.which(binary)
-        if path:
-            return path
-
-    # 2. Check standard Linux/Render installation directories
-    common_paths = [
-        "/usr/bin/chromium",
-        "/usr/bin/chromium-browser",
-        "/usr/bin/google-chrome",
-        "/usr/bin/google-chrome-stable",
-    ]
-    for path in common_paths:
-        if os.path.exists(path):
-            return path
-
-    return None
+# Set browser path variable so Playwright knows where to look
+os.environ["PLAYWRIGHT_BROWSERS_PATH"] = "0"
 
 
 async def main():
-    chrome_path = find_chromium_path()
-
-    if not chrome_path:
-        raise FileNotFoundError(
-            "Chromium/Chrome binary could not be found on this system."
-        )
-
-    print(f"Found Chromium executable at: {chrome_path}")
-
     async with async_playwright() as p:
-        # Launch using the dynamically discovered executable path
-        browser = await p.chromium.launch(
-            executable_path=chrome_path, headless=True
-        )
+        # Launch Chromium automatically
+        browser = await p.chromium.launch(headless=True)
 
         page = await browser.new_page()
         await page.goto("https://example.com")
-        print("Page title:", await page.title())
+        print("Success! Page title:", await page.title())
 
         await browser.close()
 
 
 if __name__ == "__main__":
     asyncio.run(main())
+
 
 
 
