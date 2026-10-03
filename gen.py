@@ -42,18 +42,24 @@ import asyncio
 import os
 from playwright.async_api import async_playwright
 
-# Set browser path variable so Playwright knows where to look
-os.environ["PLAYWRIGHT_BROWSERS_PATH"] = "0"
-
 
 async def main():
+    # Detect system Chromium binary path or use Playwright's default
+    chrome_path = os.getenv("CHROME_BIN", "/usr/bin/chromium")
+
     async with async_playwright() as p:
-        # Launch Chromium automatically
-        browser = await p.chromium.launch(headless=True)
+        try:
+            # Try launching via explicit path
+            browser = await p.chromium.launch(
+                executable_path=chrome_path, headless=True
+            )
+        except Exception:
+            # Fallback to Playwright default binary
+            browser = await p.chromium.launch(headless=True)
 
         page = await browser.new_page()
         await page.goto("https://example.com")
-        print("Success! Page title:", await page.title())
+        print("Successfully loaded page title:", await page.title())
 
         await browser.close()
 
