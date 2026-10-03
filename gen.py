@@ -1344,8 +1344,8 @@ def get_random_proxy() -> Optional[Dict]:
 # CROWMAIL EMAIL API
 # ============================================================================
 
-class CrowMailAPI:
-    BASE_URL = "https://api.crowmail.sbs"
+class DuckMailAPI:
+    BASE_URL = "https://api.duckmail.sbs"
     
     def __init__(self, password: str = ""):
         self.password = password or ''.join(random.choices(string.ascii_letters + string.digits, k=14))
@@ -1365,7 +1365,7 @@ class CrowMailAPI:
                         return m["domain"]
         except:
             pass
-        return "crowmail.sbs"
+        return "duckmail.sbs"
     
     def check_balance(self) -> float:
         return 0.0
@@ -1577,13 +1577,13 @@ class CrowMailAPI:
 # CROWMAIL HELPER FUNCTIONS
 # ============================================================================
 
-def get_crowmail_email(config: dict) -> tuple:
-    cm_config = config.get("email_providers", {}).get("crowmail", {})
+def get_duckmail_email(config: dict) -> tuple:
+    cm_config = config.get("email_providers", {}).get("duckmail", {})
     if not cm_config.get("enabled", False):
         return None, None, None, None
     
     password = cm_config.get("password", "")
-    api = CrowMailAPI(password=password)
+    api = DuckMailAPI(password=password)
     result = api.create_account()
     
     if result.get("success"):
@@ -1591,7 +1591,7 @@ def get_crowmail_email(config: dict) -> tuple:
     return None, None, None, None
 
 async def verify_email_crowmail(email: str, password: str, token: str, browser, refresh_token: str = "", client_id: str = "", timeout: int = 120) -> bool:
-    api = CrowMailAPI(password=password)
+    api = DuckMailAPI(password=password)
     verify_url = api.get_verify_url(email, password, refresh_token, client_id, timeout)
     if verify_url:
         return await verify_email_with_url(browser, verify_url, token)
@@ -1753,154 +1753,7 @@ class CyberTempAPI:
 # DUCKMAIL EMAIL API
 # ============================================================================
 
-class DuckMailAPI:
-    BASE_URL = "https://api.duckmail.sbs"
-    
-    def __init__(self, password: str = ""):
-        self.password = password or ''.join(random.choices(string.ascii_letters + string.digits, k=14))
-        self.session = requests.Session()
-        self.session.verify = False
-        self.session.headers.update({"Content-Type": "application/json"})
-        self._bearer = None
-        self._email = None
-        self._email_data = {}
-    
-    def _domain(self) -> str:
-        try:
-            r = self.session.get(f"{self.BASE_URL}/domains", timeout=10)
-            if r.status_code == 200:
-                for m in r.json().get("hydra:member", []):
-                    if m.get("ownerId") is None:
-                        return m["domain"]
-        except:
-            pass
-        return "duckmail.sbs"
-    
-    def create_account(self, email: str = None, password: str = None, proxy: str = None) -> dict:
-        try:
-            domain = self._domain()
-            local = ''.join(random.choices(string.ascii_lowercase + string.digits, k=10))
-            addr = f"{local}@{domain}"
-            pw = password or self.password
-            
-            r = self.session.post(
-                f"{self.BASE_URL}/accounts",
-                json={"address": addr, "password": pw, "expiresIn": 0},
-                timeout=10
-            )
-            if r.status_code != 201:
-                return {"success": False, "error": f"Account creation failed: {r.status_code}"}
-            
-            token_r = self.session.post(
-                f"{self.BASE_URL}/token",
-                json={"address": addr, "password": pw},
-                timeout=10
-            )
-            if token_r.status_code != 200:
-                return {"success": False, "error": "Token retrieval failed"}
-            
-            self._bearer = token_r.json().get("token")
-            self._email = addr
-            self._email_data = {
-                "email": addr,
-                "password": pw,
-                "token": self._bearer,
-                "uuid": ""
-            }
-            
-            return {
-                "success": True,
-                "email": addr,
-                "password": pw,
-                "token": self._bearer,
-                "uuid": ""
-            }
-        except Exception as e:
-            return {"success": False, "error": str(e)}
-    
-    def buy_email(self) -> dict:
-        return self.create_account()
-    
-    def get_verify_url(self, email: str, password: str, refresh_token: str = "", client_id: str = "", timeout: int = 120, proxy: str = None) -> Optional[str]:
-        if not self._bearer:
-            token_r = self.session.post(
-                f"{self.BASE_URL}/token",
-                json={"address": email, "password": password},
-                timeout=10
-            )
-            if token_r.status_code == 200:
-                self._bearer = token_r.json().get("token")
-            else:
-                return None
-        
-        headers = {"Authorization": f"Bearer {self._bearer}"}
-        start_time = time.time()
-        seen_ids = set()
-        
-        while time.time() - start_time < timeout:
-            try:
-                r = self.session.get(f"{self.BASE_URL}/messages", headers=headers, timeout=10)
-                if r.status_code != 200:
-                    time.sleep(3)
-                    continue
-                
-                messages = r.json().get("hydra:member", [])
-                
-                for msg in messages:
-                    msg_id = msg.get("id")
-                    if not msg_id or msg_id in seen_ids:
-                        continue
-                    seen_ids.add(msg_id)
-                    
-                    subject = msg.get("subject", "").lower()
-                    sender = msg.get("from", {}).get("address", "").lower()
-                    
-                    is_verify = (
-                        ("verify" in subject or "confirm" in subject or "email" in subject or "discord" in subject) and
-                        ("discord" in sender or "noreply@discord.com" in sender)
-                    )
-                    
-                    if not is_verify:
-                        continue
-                    
-                    detail_r = self.session.get(
-                        f"{self.BASE_URL}/messages/{msg_id}",
-                        headers=headers,
-                        timeout=10
-                    )
-                    if detail_r.status_code != 200:
-                        continue
-                    
-                    detail = detail_r.json()
-                    
-                    html_body = detail.get("html", [""])[0] if detail.get("html") else ""
-                    text_body = detail.get("text", "") or ""
-                    combined = html_body + text_body
-                    
-                    verify_pattern = r'https://discord\.com/verify\?token=[^"\'\>\s]+'
-                    direct_match = re.search(verify_pattern, combined)
-                    if direct_match:
-                        return direct_match.group(0)
-                    
-                    click_pattern = r'https://click\.discord\.com/ls/click\?[^"\'\>\s]+'
-                    for m in re.finditer(click_pattern, combined):
-                        url = m.group(0)
-                        try:
-                            resp = self.session.get(url, allow_redirects=True, timeout=10)
-                            if "discord.com/verify" in resp.url:
-                                return resp.url
-                            verify_in_body = re.search(verify_pattern, resp.text)
-                            if verify_in_body:
-                                return verify_in_body.group(0)
-                        except:
-                            pass
-                
-            except Exception as e:
-                pass
-            
-            time.sleep(3)
-        
-        return None
+
 
 # ============================================================
 # WATERMARK - LEAK X HUB
