@@ -3,18 +3,13 @@
     "cooldown": 120,
     "provider_selection": "crowmail",
     "email_providers": {
-        "crowmail": {
-            "enabled": false,
-            "password": "Frosty&LeakxVault@123",
-            "description": "CrowMail - Free temporary email service"
-        },
         "cybertemp": {
             "enabled": true,
             "api_key": "tk_dadd3294af433a028d31d3e7dc80dfca3e6f472ec00bd5ca1ba7405a4d5ddad4",
             "description": "CyberTemp - Free temporary email service"
         },
-        "duckmail": {
-            "enabled": false,
+       "duckmail": {
+            "enabled": true,
             "password": "Chahal@14",
             "description": "DuckMail - Free temporary email service"
         },
