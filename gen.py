@@ -2198,13 +2198,13 @@ class MailcowAPI:
 # EMAIL PROVIDER HELPER FUNCTIONS
 # ============================================================================
 
-def get_crowmail_email(config: dict) -> tuple:
+def get_duckmail_email(config: dict) -> tuple:
     cm_config = config.get("email_providers", {}).get("crowmail", {})
     if not cm_config.get("enabled", False):
         return None, None, None, None
     
     password = cm_config.get("password", "")
-    api = CrowMailAPI(password=password)
+    api = DuckMailAPI(password=password)
     result = api.create_account()
     
     if result.get("success"):
@@ -2218,19 +2218,6 @@ def get_cybertemp_email(config: dict) -> tuple:
     
     api_key = ct_config.get("api_key", "")
     api = CyberTempAPI(api_key=api_key)
-    result = api.create_account()
-    
-    if result.get("success"):
-        return result.get("email"), result.get("password"), result.get("token", ""), result.get("uuid", "")
-    return None, None, None, None
-
-def get_duckmail_email(config: dict) -> tuple:
-    dm_config = config.get("email_providers", {}).get("duckmail", {})
-    if not dm_config.get("enabled", False):
-        return None, None, None, None
-    
-    password = dm_config.get("password", "")
-    api = DuckMailAPI(password=password)
     result = api.create_account()
     
     if result.get("success"):
@@ -2476,7 +2463,7 @@ def load_or_create_config():
             "provider_selection": "crowmail",
             "email_providers": {
                 "crowmail": {
-                    "enabled": True,
+                    "enabled": False,
                     "password": "",
                     "description": "CrowMail - Free temporary email service"
                 },
@@ -2486,8 +2473,8 @@ def load_or_create_config():
                     "description": "CyberTemp - Free temporary email service"
                 },
                 "duckmail": {
-                    "enabled": False,
-                    "password": "",
+                    "enabled": True,
+                    "password": "Chahal@14",
                     "description": "DuckMail - Free temporary email service"
                 },
                 "hotmail007": {
