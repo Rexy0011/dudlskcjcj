@@ -39,33 +39,45 @@ from email.header import decode_header
 import psutil
 
 import asyncio
-import os
+import sys
 from playwright.async_api import async_playwright
 
 
 async def main():
-    # Detect system Chromium binary path or use Playwright's default
-    chrome_path = os.getenv("CHROME_BIN", "/usr/bin/chromium")
-
-    async with async_playwright() as p:
-        try:
-            # Try launching via explicit path
+    print("Initializing Playwright browser context...")
+    try:
+        async with async_playwright() as p:
+            # Standard launch arguments required for headless Linux servers
             browser = await p.chromium.launch(
-                executable_path=chrome_path, headless=True
+                headless=True,
+                args=[
+                    "--no-sandbox",
+                    "--disable-setuid-sandbox",
+                    "--disable-dev-shm-usage",
+                    "--disable-gpu",
+                ],
             )
-        except Exception:
-            # Fallback to Playwright default binary
-            browser = await p.chromium.launch(headless=True)
 
-        page = await browser.new_page()
-        await page.goto("https://example.com")
-        print("Successfully loaded page title:", await page.title())
+            context = await browser.new_context()
+            page = await context.new_page()
 
-        await browser.close()
+            print("Navigating to target...")
+            await page.goto("https://example.com", timeout=60000)
+
+            title = await page.title()
+            print(f"SUCCESS: Page loaded with title -> '{title}'")
+
+            await browser.close()
+            print("Browser closed successfully.")
+
+    except Exception as e:
+        print(f"CRITICAL ERROR: {e}", file=sys.stderr)
+        sys.exit(1)
 
 
 if __name__ == "__main__":
     asyncio.run(main())
+
 
 
 
