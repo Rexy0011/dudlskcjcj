@@ -7,3 +7,4 @@ nopecha
 nodriver
 httpx
 colorama
+pystyle
