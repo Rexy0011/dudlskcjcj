@@ -8,3 +8,4 @@ nodriver
 httpx
 colorama
 pystyle
+rich
