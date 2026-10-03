@@ -1,26 +1,14 @@
-FROM python:3.10-slim
-
-# Install system dependencies
-RUN apt-get update && apt-get install -y \
-    chromium \
-    chromium-driver \
-    libglib2.0-0 \
-    libnss3 \
-    libgconf-2-4 \
-    libfontconfig1 \
-    && rm -rf /var/lib/apt-lists/*
+# Use Playwright's official Docker image (includes Python 3.10 and Chromium with all system dependencies)
+FROM mcr.microsoft.com/playwright/python:v1.40.0-jammy
 
 WORKDIR /app
-COPY . .
 
-# Install Python requirements
+# Copy requirements and install
+COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Install Playwright's browser binary inside the image
-RUN playwright install chromium
+# Copy application files
+COPY . .
 
-# Set default binary environment variable
-ENV CHROME_BIN=/usr/bin/chromium
-
-# Start Command
+# Run application
 CMD ["python", "gen.py"]
