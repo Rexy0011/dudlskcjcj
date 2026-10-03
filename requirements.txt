@@ -4,7 +4,7 @@ tls_client
 requests
 urllib3
 nopecha
-nodriver
+nodriver==0.50.3
 httpx
 colorama
 pystyle
