@@ -4,7 +4,7 @@
     "provider_selection": "crowmail",
     "email_providers": {
         "crowmail": {
-            "enabled": true,
+            "enabled": false,
             "password": "Frosty&LeakxVault@123",
             "description": "CrowMail - Free temporary email service"
         },
@@ -14,8 +14,8 @@
             "description": "CyberTemp - Free temporary email service"
         },
         "duckmail": {
-            "enabled": false,
-            "password": "",
+            "enabled": true,
+            "password": "Chahal@14",
             "description": "DuckMail - Free temporary email service"
         },
         "hotmail007": {
