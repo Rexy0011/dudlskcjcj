@@ -39,44 +39,66 @@ from email.header import decode_header
 import psutil
 
 import asyncio
+import os
 import sys
-from playwright.async_api import async_playwright
+import nodriver as uc
+
+
+def get_chromium_path():
+    """Find the system Chromium binary path."""
+    paths = [
+        "/usr/bin/chromium",
+        "/usr/bin/chromium-browser",
+        "/usr/bin/google-chrome",
+    ]
+    for path in paths:
+        if os.path.exists(path):
+            return path
+    return None
 
 
 async def main():
-    print("Initializing Playwright browser context...")
+    chrome_path = get_chromium_path()
+    if not chrome_path:
+        print(
+            "CRITICAL ERROR: Chromium binary not found on path.",
+            file=sys.stderr,
+        )
+        sys.exit(1)
+
+    print(f"Starting nodriver with browser executable at: {chrome_path}")
+
+    # Launch nodriver with required Linux server flags
+    browser = await uc.start(
+        browser_executable_path=chrome_path,
+        browser_args=[
+            "--no-sandbox",
+            "--disable-setuid-sandbox",
+            "--disable-dev-shm-usage",
+            "--disable-gpu",
+            "--headless=new",
+        ],
+    )
+
     try:
-        async with async_playwright() as p:
-            # Standard launch arguments required for headless Linux servers
-            browser = await p.chromium.launch(
-                headless=True,
-                args=[
-                    "--no-sandbox",
-                    "--disable-setuid-sandbox",
-                    "--disable-dev-shm-usage",
-                    "--disable-gpu",
-                ],
-            )
+        print("Opening target page...")
+        page = await browser.get("https://example.com")
+        await asyncio.sleep(3)
 
-            context = await browser.new_context()
-            page = await context.new_page()
-
-            print("Navigating to target...")
-            await page.goto("https://example.com", timeout=60000)
-
-            title = await page.title()
-            print(f"SUCCESS: Page loaded with title -> '{title}'")
-
-            await browser.close()
-            print("Browser closed successfully.")
+        content = await page.get_content()
+        print(f"SUCCESS: Page content retrieved ({len(content)} characters).")
 
     except Exception as e:
-        print(f"CRITICAL ERROR: {e}", file=sys.stderr)
+        print(f"ERROR during browser execution: {e}", file=sys.stderr)
         sys.exit(1)
+    finally:
+        browser.stop()
+        print("Browser stopped.")
 
 
 if __name__ == "__main__":
-    asyncio.run(main())
+    uc.loop().run_until_complete(main())
+
 
 
 
