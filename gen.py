@@ -38,7 +38,22 @@ import email as email_module
 from email.header import decode_header
 import psutil
 
- browser = await p.chromium.launch(channel="chrome", headless=True)
+import asyncio
+from playwright.async_api import async_playwright
+
+async def main():
+    async with async_playwright() as p:
+        # Playwright automatically finds its installed Chromium binary
+        browser = await p.chromium.launch(headless=True)
+        page = await browser.new_page()
+        await page.goto("https://example.com")
+        print(await page.title())
+        await browser.close()
+
+if __name__ == "__main__":
+    asyncio.run(main())
+
+
  # adjust to your installed binary location
 
 # Example if using Pyppeteer / Playwright / Selenium:
