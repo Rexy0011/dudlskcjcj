@@ -1,0 +1,78 @@
+{
+    "threads": 1,
+    "cooldown": 120,
+    "provider_selection": "crowmail",
+    "email_providers": {
+        "crowmail": {
+            "enabled": true,
+            "password": "Frosty&LeakxVault@123",
+            "description": "CrowMail - Free temporary email service"
+        },
+        "cybertemp": {
+            "enabled": false,
+            "api_key": "",
+            "description": "CyberTemp - Free temporary email service"
+        },
+        "duckmail": {
+            "enabled": false,
+            "password": "",
+            "description": "DuckMail - Free temporary email service"
+        },
+        "hotmail007": {
+            "enabled": false,
+            "client_key": "",
+            "description": "Hotmail007 - Premium Hotmail email accounts"
+        },
+        "zeusx": {
+            "enabled": false,
+            "api_key": "",
+            "description": "ZeusX - Premium Zeus email accounts"
+        },
+        "leveragers": {
+            "enabled": false,
+            "api_key": "",
+            "domain": "leveragers.xyz",
+            "description": "Leveragers - Private email accounts"
+        },
+        "draxono": {
+            "enabled": false,
+            "api_key": "",
+            "domains": [],
+            "description": "Public Temp Inbox - Free temporary email"
+        },
+        "mailcow": {
+            "enabled": false,
+            "mailcow_url": "",
+            "api_key": "",
+            "imap_host": "",
+            "domains": [],
+            "description": "Mailcow - Self-hosted email server"
+        }
+    },
+    "proxy": {
+        "enabled": false,
+        "file": "input/proxies.txt"
+    },
+    "mullvad": {
+        "enabled": false,
+        "country": "us",
+        "auto_login": false,
+        "account_number": "",
+        "account_file": "input/mullvad_accounts.txt"
+    },
+    "urbanvpn": {
+        "enabled": false,
+        "server": "us",
+        "path": ""
+    },
+    "adb": {
+        "enabled": false,
+        "path": "",
+        "host": "127.0.0.1",
+        "port": 5555
+    },
+    "nopecha": {
+        "enabled": true,
+        "api_key": ""
+    }
+}

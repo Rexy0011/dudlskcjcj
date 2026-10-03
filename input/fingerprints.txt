@@ -1,0 +1,2 @@
+# Add your fingerprints here, one per line
+# Each fingerprint will be assigned to one account
