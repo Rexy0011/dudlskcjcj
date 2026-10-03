@@ -1,14 +1,21 @@
-# Use Playwright's official Docker image (includes Python 3.10 and Chromium with all system dependencies)
+# Use official Playwright base image
 FROM mcr.microsoft.com/playwright/python:v1.40.0-jammy
 
 WORKDIR /app
 
-# Copy requirements and install
+# Upgrade pip first
+RUN pip install --upgrade pip
+
+# Copy dependencies and install
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Copy application files
+# Ensure matching Chromium binary is downloaded inside the image
+RUN playwright install chromium
+RUN playwright install-deps chromium
+
+# Copy application source code
 COPY . .
 
-# Run application
+# Execution command
 CMD ["python", "gen.py"]
