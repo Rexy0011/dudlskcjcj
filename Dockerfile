@@ -1,21 +1,22 @@
-# Use official Playwright base image
 FROM mcr.microsoft.com/playwright/python:v1.40.0-jammy
 
 WORKDIR /app
 
-# Upgrade pip first
+# Upgrade pip
 RUN pip install --upgrade pip
 
-# Copy dependencies and install
+# Install system Chromium binary and dependencies for nodriver
+RUN apt-get update && apt-get install -y \
+    chromium-browser \
+    || apt-get install -y chromium \
+    && rm -rf /var/lib/apt-lists/*
+
+# Copy and install Python dependencies
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Ensure matching Chromium binary is downloaded inside the image
-RUN playwright install chromium
-RUN playwright install-deps chromium
-
-# Copy application source code
+# Copy remaining source code
 COPY . .
 
-# Execution command
+# Set start command
 CMD ["python", "gen.py"]
