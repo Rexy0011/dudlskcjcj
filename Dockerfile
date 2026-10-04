@@ -5,12 +5,13 @@ ENV PYTHONUNBUFFERED=1 \
     PYTHONDONTWRITEBYTECODE=1 \
     DEBIAN_FRONTEND=noninteractive
 
-# Install dependencies, curl, and modern Google Chrome keyring
+# Install dependencies, xauth, and Chrome
 RUN apt-get update && apt-get install -y --no-install-recommends \
     curl \
     gnupg \
     unzip \
     xvfb \
+    xauth \
     libnss3 \
     libatk1.0-0 \
     libatk-bridge2.0-0 \
