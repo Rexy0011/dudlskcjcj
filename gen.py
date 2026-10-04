@@ -37,32 +37,6 @@ import imaplib
 import email as email_module
 from email.header import decode_header
 import psutil
-
-import os
-import threading
-from http.server import HTTPServer, BaseHTTPRequestHandler
-
-class HealthCheckHandler(BaseHTTPRequestHandler):
-    def do_GET(self):
-        self.send_response(200)
-        self.send_header("Content-type", "text/plain")
-        self.end_headers()
-        self.wfile.write(b"OK")
-
-    def log_message(self, format, *args):
-        # Mute continuous GET / logs from Render health checks
-        pass
-
-def run_health_check_server():
-    port = int(os.environ.get("PORT", 8080))
-    server = HTTPServer(("0.0.0.0", port), HealthCheckHandler)
-    print(f"Health check server running on port {port}")
-    server.serve_forever()
-
-# Start HTTP server in a background thread
-# Start HTTP server in a background thread
-threading.Thread(target=run_health_check_server, daemon=True).start()
-
 # --- Your existing script / nodriver code below ---
 
 
