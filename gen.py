@@ -100,6 +100,17 @@ if __name__ == "__main__":
     uc.loop().run_until_complete(main())
 
 
+import nodriver as uc
+
+async def main():
+    browser = await uc.start(
+        browser_args=[
+            '--no-sandbox',
+            '--disable-setuid-sandbox',
+            '--disable-dev-shm-usage',
+            '--headless=new'
+        ]
+    )
 
 
 
