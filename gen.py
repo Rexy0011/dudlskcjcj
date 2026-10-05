@@ -37,8 +37,6 @@ import imaplib
 import email as email_module
 from email.header import decode_header
 import psutil
-# --- Your existing script / nodriver code below ---
-
 
 import asyncio
 import os
@@ -52,6 +50,7 @@ def get_chromium_path():
         "/usr/bin/chromium",
         "/usr/bin/chromium-browser",
         "/usr/bin/google-chrome",
+        "/usr/bin/google-chrome-stable",
     ]
     for path in paths:
         if os.path.exists(path):
@@ -71,22 +70,22 @@ async def main():
     print(f"Starting nodriver with browser executable at: {chrome_path}")
 
     # Launch nodriver with required Linux server flags
- 
-        browser = await uc.start(
-   browser_executable_path=chrome_path,
-            sandbox=False,  # Disables Chromium sandbox required in Docker/Codespaces
-    browser_args=[
-        "--no-sandbox",
-        "--disable-setuid-sandbox",
-        "--disable-dev-shm-usage",
-        "--headless=new",
-    ]
-)
+    browser = await uc.start(
+        browser_executable_path=chrome_path,
+        sandbox=False,
+        headless=True,
+        browser_args=[
+            "--no-sandbox",
+            "--disable-setuid-sandbox",
+            "--disable-dev-shm-usage",
+            "--disable-gpu",
+        ],
+    )
 
     try:
         print("Opening target page...")
         page = await browser.get("https://example.com")
-        await asyncio.sleep(3)
+        await page.sleep(3)
 
         content = await page.get_content()
         print(f"SUCCESS: Page content retrieved ({len(content)} characters).")
@@ -101,22 +100,6 @@ async def main():
 
 if __name__ == "__main__":
     uc.loop().run_until_complete(main())
-
-
-import nodriver as uc
-
-async def main():
-    # In /workspaces/Evs-gen/gen.py
-    browser = await uc.start(
-    sandbox=False,  # Disables Chromium sandbox required in Docker/Codespaces
-    browser_args=[
-        "--no-sandbox",
-        "--disable-setuid-sandbox",
-        "--disable-dev-shm-usage",
-        "--headless=new",
-    ]
-)
-
 
 
 
