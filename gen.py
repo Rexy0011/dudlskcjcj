@@ -105,14 +105,17 @@ if __name__ == "__main__":
 import nodriver as uc
 
 async def main():
+    # In /workspaces/Evs-gen/gen.py
     browser = await uc.start(
-        browser_args=[
-            '--no-sandbox',
-            '--disable-setuid-sandbox',
-            '--disable-dev-shm-usage',
-            '--headless=new'
-        ]
-    )
+    sandbox=False,  # Disables Chromium sandbox required in Docker/Codespaces
+    browser_args=[
+        "--no-sandbox",
+        "--disable-setuid-sandbox",
+        "--disable-dev-shm-usage",
+        "--headless=new",
+    ]
+)
+
 
 
 
