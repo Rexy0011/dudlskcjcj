@@ -71,16 +71,17 @@ async def main():
     print(f"Starting nodriver with browser executable at: {chrome_path}")
 
     # Launch nodriver with required Linux server flags
-    browser = await uc.start(
-        browser_executable_path=chrome_path,
-        browser_args=[
-            "--no-sandbox",
-            "--disable-setuid-sandbox",
-            "--disable-dev-shm-usage",
-            "--disable-gpu",
-            "--headless=new",
-        ],
-    )
+ 
+        browser = await uc.start(
+   browser_executable_path=chrome_path,
+            sandbox=False,  # Disables Chromium sandbox required in Docker/Codespaces
+    browser_args=[
+        "--no-sandbox",
+        "--disable-setuid-sandbox",
+        "--disable-dev-shm-usage",
+        "--headless=new",
+    ]
+)
 
     try:
         print("Opening target page...")
